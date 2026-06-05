@@ -1,0 +1,103 @@
+Advanced Personal Finance Manager - System Design Document (Part 1)
+
+Target Platform: Android (Tauri Mobile)
+Frontend: React + TypeScript + Vite + Tailwind CSS
+Database: SQLite (Local First)
+Backup & Sync: Google Drive (Current), Self-hosted Rust API via Axum (Future)
+
+1. Product Vision & Core Principles
+
+The goal is to build a privacy-focused, offline-first personal finance platform allowing users to manage income, expenses, budgets, goals, and analytics.
+
+Offline-First Architecture: The application must function completely offline, storing all financial data locally on the device's SQLite database.
+
+Data Ownership: There is no mandatory account creation, and the user owns all their data.
+
+Security & Privacy: The app will utilize end-to-end encrypted backups and operate without an internet connection, using the internet solely for optional synchronization and backup capabilities.
+
+2. Architecture & Development Guidelines
+
+To maintain a scalable and stable application, the following strict coding practices must be followed:
+
+Separation of Concerns: Keep business logic entirely out of the UI.
+
+Service Layer: Create dedicated services for all financial calculations.
+
+Repository Pattern: Do not expose SQLite directly to React components; prefer a repository abstraction layer.
+
+Testing & Reliability: Write comprehensive tests for every money-related function and utilize database migrations from day one.
+
+Performance Optimization: Optimize reporting and analytics queries with indexes.
+
+Phased Approach: Avoid premature backend development; the offline-first experience is the absolute priority.
+
+3. Recommended Folder Structure
+
+The source code will be organized to support domain-specific features and scalable architecture:
+
+src/
+  components/    # Reusable UI elements (Tailwind)
+  pages/         # Main views
+  features/      # Domain-specific modules
+    transactions/
+    budgets/
+    goals/
+    investments/
+    subscriptions/
+    analytics/
+    gamification/
+    automation/  # Rule-based engine
+  services/      # Financial calculations and business logic
+  repositories/  # SQLite access layer
+  database/      # Migrations and schema
+  hooks/         # Custom React hooks
+  store/         # Global state management
+  utils/         # Helper functions
+  types/         # TypeScript definitions
+
+4. Database Design Principles
+
+Primary Keys: Use UUIDs for all primary keys.
+
+Currency Storage: Never store floating-point currency values. Store all money in paise (integers).
+
+Data Integrity: Use soft deletes wherever possible instead of hard deleting records.
+
+Auditing: Track created_at and updated_at timestamps on every table.
+
+5. Core Database Models (Phase 1)
+
+(Human Note: All balances must be derived from transactions. Avoid directly mutating balances except for cached summaries to maintain the integrity of the financial engine.)
+
+user_settings (Stores app-wide preferences)
+Columns: id, currency, locale, theme, pin_hash, biometric_enabled, created_at
+
+accounts (Represents Banking, Savings, Wallets, Cards, etc.)
+Columns: id, name, account_type, opening_balance, current_balance, notes, archived, created_at
+
+categories (Supports infinite nesting for subcategories)
+Columns: id, name, parent_category_id, icon
+
+transactions (The core ledger table)
+Columns: id, account_id, category_id, amount, transaction_type, payment_method, merchant, notes, transaction_date, recurring_transaction_id, created_at
+Indexes applied to: account_id, category_id, transaction_date, amount
+
+tags & flags (For custom categorization and transaction states)
+tags: id, name
+flags: id, name, icon
+Junction tables: transaction_tags, transaction_flags
+
+attachments (For OCR bills, receipts, and invoices)
+Columns: id, transaction_id, file_path, mime_type
+
+6. Rule-Based Automation Engine
+
+To support the auto-categorization of transactions:
+
+automation_rules
+- id, condition_field (e.g., Merchant, Amount)
+- condition_operator (e.g., Contains, Greater Than)
+- condition_value (e.g., "Swiggy", "10000")
+- action_field (e.g., Category, Flag)
+- action_value (e.g., "Food", "High Value")
+Note: These rules auto-apply during transaction creation.

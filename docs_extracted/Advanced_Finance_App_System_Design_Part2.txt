@@ -1,0 +1,80 @@
+Advanced Personal Finance Manager - System Design Document (Part 2)
+
+7. Extended Database Models (Phase 2 & Beyond)
+
+These physical tables support the advanced tracking and gamification mechanics of the application.
+
+transfers
+Columns: id, from_account_id, to_account_id, amount, transfer_date
+
+recurring_transactions
+Columns: id, frequency, next_run_date, template_json, auto_create
+
+budgets
+Columns: id, category_id, period_type, budget_amount
+
+goals & goal_contributions
+goals: id, title, target_amount, current_amount, target_date, status
+goal_contributions: id, goal_id, transaction_id, amount
+
+investments
+Columns: id, account_id, investment_type, symbol, units, avg_cost, current_value
+
+loans & emis
+loans: id, lender_name, loan_type, principal_amount, interest_rate, outstanding_amount
+emis: id, loan_id, emi_amount, due_date, status
+
+subscriptions
+Columns: id, name, amount, billing_cycle, next_renewal
+
+gamification tables
+achievements: id, code, title, xp_reward
+user_achievements: id, achievement_id, unlocked_at
+xp_events: id, source, xp_amount
+challenges: id, title, target_value
+wealth_garden_items: id, goal_id, tree_type, growth_stage
+
+backups
+Columns: id, drive_file_id, checksum, backup_date
+
+8. Financial & Analytics Engines
+
+Financial Engine Responsibilities: Handles account balance calculations, transfer processing, budget tracking, goal progress, net worth calculations, and cash flow.
+
+Analytics Engine: Generates daily, weekly, monthly, quarterly, and yearly summaries. Calculates metrics like income vs. expense, savings rate, category breakdown, investment growth, and net worth trends.
+
+Smart Insights: Auto-generates anomaly detections (e.g., "Food spending increased 23%").
+
+9. Gamification Engine
+
+XP System: Rewards users for actions like logging transactions or staying under budget.
+
+Financial Health Score: Calculated monthly based on savings rate, debt ratio, and budget adherence.
+
+Wealth Garden: Visual representation where savings goals grow into trees as milestones are reached.
+
+Boss Battle: Monthly financial reviews summarizing goals and budgets.
+
+10. Backup, Sync, & Security
+
+Offline First: All operations write locally to SQLite. UI updates immediately without network dependency.
+
+Google Drive Backup: Database is exported, encrypted (AES-256), compressed, and uploaded to Drive.
+
+Future Sync (Rust + Axum): Incremental sync using change logs (sync_events table) with last-write-wins conflict resolution.
+
+Security: PIN lock, biometrics, encrypted database (SQLCipher), and secure key storage.
+
+11. Development Roadmap
+
+Phase 1: Transactions, Accounts, Categories, Budgets, Reports
+
+Phase 2: Goals, Investments, Subscriptions, Loans
+
+Phase 3: Gamification, Health Score, Wealth Garden
+
+Phase 4: Google Drive Backup
+
+Phase 5: Desktop Support
+
+Phase 6: Self-hosted Sync

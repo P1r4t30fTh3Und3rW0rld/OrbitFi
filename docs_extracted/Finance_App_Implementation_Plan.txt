@@ -1,0 +1,107 @@
+Advanced Personal Finance Manager - Implementation Plan
+
+This document outlines a structured, phased approach to building the application. Phases are kept small and verifiable to ensure stability and correctness before moving forward.
+
+Phase 0: Project Setup & Infrastructure (P0)
+
+Goal: Establish the foundational tech stack, architecture, and database layer.
+
+Initialize Tauri mobile project with React, TypeScript, and Vite.
+
+Install and configure Tailwind CSS.
+
+Set up Tauri SQLite plugin (tauri-plugin-sql) for local-first database access.
+
+Create initial database migrations framework.
+
+Set up testing framework (Vitest) for business logic.
+
+Verification: App compiles and runs on an Android emulator/device. Database file is successfully created on launch.
+
+Phase 1: Foundation - Accounts & Categories (P1)
+
+Goal: Build the essential building blocks for transactions.
+
+Run migrations for user_settings, accounts, and categories tables.
+
+Implement Repository abstractions for Accounts and Categories (no direct SQL in UI).
+
+Build UI to list, create, and edit accounts and categories.
+
+Verification: User can create an account and a nested category. Data persists after app restart.
+
+Phase 2: Core Ledger - The Transaction Engine (P2)
+
+Goal: Enable users to add transactions and see accurate balance updates.
+
+Run migrations for transactions, tags, and flags.
+
+Implement Financial Service Layer to calculate dynamic account balances based on ledger entries.
+
+Build UI forms to add Income, Expense, and Transfer transactions.
+
+Build UI to view the transaction history (Ledger view).
+
+Write unit tests for the balance calculation service.
+
+Verification: Adding a ₹500 expense accurately deducts from the selected account balance. Unit tests pass.
+
+Phase 3: Insights & Dashboards (P3)
+
+Goal: Visualize the raw transaction data.
+
+Implement Analytics Service to calculate monthly income, expenses, and cash flow.
+
+Build the Main Dashboard UI with summary cards (Total Balance, Net Worth).
+
+Add basic charts (e.g., spending by category pie chart) using a charting library.
+
+Verification: Dashboard charts accurately reflect the transactions added in Phase 2.
+
+Phase 4: Budget Management (P4)
+
+Goal: Allow users to set and track spending limits.
+
+Run migrations for the budgets table.
+
+Implement Budget Service to compare actual category spending against budget limits.
+
+Build UI to create budgets and view visual progress bars.
+
+Verification: Adding an expense to the "Food" category correctly fills the Food budget progress bar.
+
+Phase 5: Goals & Advanced Tracking (P5)
+
+Goal: Introduce long-term planning features.
+
+Run migrations for goals, goal_contributions, and subscriptions.
+
+Build UI to create savings goals and track recurring subscriptions.
+
+Implement logic to tie specific transfers/transactions to goal progress.
+
+Verification: User can allocate funds to an "Emergency Fund" goal and see the completion percentage increase.
+
+Phase 6: Gamification & Automation (P6)
+
+Goal: Make the app engaging and reduce friction.
+
+Run migrations for automation_rules and gamification tables (XP, achievements).
+
+Implement rule-engine to auto-categorize transactions during creation.
+
+Implement XP service that rewards points for adding transactions and staying under budget.
+
+Verification: Entering a transaction with merchant "Uber" auto-categorizes to "Transport". User levels up after 10 transactions.
+
+Phase 7: Data Safety & Backups (P7)
+
+Goal: Ensure the user never loses their local data.
+
+Implement Google Drive OAuth integration.
+
+Implement AES-256 encryption for the SQLite database file export.
+
+Build manual backup and restore UI.
+
+Verification: User can trigger a backup, delete the app, reinstall, restore from Drive, and see all data intact.
